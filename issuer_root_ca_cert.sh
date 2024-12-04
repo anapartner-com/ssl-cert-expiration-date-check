@@ -15,6 +15,7 @@ fi
 rm -f "$PROCESSED_CERTS"
 
 # Fetch the server certificate
+echo "############################################################################"
 echo "Fetching server certificate from $FQDN:$PORT..."
 echo | openssl s_client -connect "$FQDN:$PORT" -showcerts 2>/dev/null | \
     awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' > server_cert.pem
@@ -45,7 +46,10 @@ download_issuer_cert() {
 
     # Check if the file is in PKCS#7 format
     if openssl pkcs7 -inform DER -in issuer_cert_raw -print 2>/dev/null | grep -q "PKCS7"; then
-        echo "Converting PKCS#7 certificate to PEM format..."
+        echo "############################################################################"
+        echo "Converting PKCS#7 certificate to PEM format...issuer_cert.pem"
+        echo "Converting PKCS#7 certificate to PEM format...issuer_cert.pem"
+        echo "Converting PKCS#7 certificate to PEM format...issuer_cert.pem"
         openssl pkcs7 -inform DER -in issuer_cert_raw -out issuer_cert.pem -print_certs
     else
         mv issuer_cert_raw issuer_cert.pem
@@ -74,10 +78,20 @@ while true; do
     # Record the current certificate subject to prevent loops
     echo "$SUBJECT" >> "$PROCESSED_CERTS"
 
-    # Check if the issuer matches the subject (root CA)
+    # Check if the issuer matches the subject (self-signed root CA)
     if [[ "$ISSUER" == "$SUBJECT" ]]; then
+        echo "############################################################################"
         echo "Root CA certificate found: $CURRENT_CERT"
-        cp "$CURRENT_CERT" "$ROOT_CA_OUTPUT"
+        echo "Root CA certificate found: $CURRENT_CERT"
+        echo "Root CA certificate found: $CURRENT_CERT"
+        # Ensure it's saved in PEM format
+        if openssl x509 -in "$CURRENT_CERT" -noout > /dev/null 2>&1; then
+            cp "$CURRENT_CERT" "$ROOT_CA_OUTPUT"
+        else
+            echo "Converting $CURRENT_CERT to PEM format..."
+            openssl x509 -inform DER -in "$CURRENT_CERT" -out "$ROOT_CA_OUTPUT" 2>/dev/null || \
+            openssl pkcs7 -print_certs -inform DER -in "$CURRENT_CERT" -out "$ROOT_CA_OUTPUT" 2>/dev/null
+        fi
         break
     fi
 
@@ -95,4 +109,7 @@ done
 # Clean up the tracking file
 rm -f "$PROCESSED_CERTS"
 
-echo "Root CA certificate saved to $ROOT_CA_OUTPUT"
+echo "############################################################################"
+ls -lart *.pem
+echo "############################################################################"
+echo ""
