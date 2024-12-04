@@ -14,5 +14,6 @@ The output will contain the list of certs (server, intermediate ca, root ca) if 
 ![image](https://github.com/user-attachments/assets/59fb2e1f-2e7a-4c45-a0eb-2ea3426dec5b)
 
 Example of using openssl and the issuer referral to pull the root CA cert   
+- issuer_root_ca_cert.sh  niss-ncaiss.dss.mil 443   
 
 ![image](https://github.com/user-attachments/assets/3d3186d5-e827-4bf0-842d-ace146226b64)
