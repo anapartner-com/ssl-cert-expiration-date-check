@@ -11,7 +11,7 @@ if [[ ! -f $INPUT_FILE ]]; then
 fi
 
 # Initialize the output CSV file with headers
-echo "FQDN,Port,Expiration Date,Expiration Date (YYYYMMDD),Subject Name" > "$OUTPUT_FILE"
+echo "FQDN,Port,Expiration Date (YYYYMMDD),Expiration Date,Serial Number,Subject Name" > "$OUTPUT_FILE"
 
 # Read the input file line by line
 while IFS= read -r line; do
@@ -47,17 +47,17 @@ while IFS= read -r line; do
     csplit -s -z -f cert_part_ temp_cert.pem '/-----BEGIN CERTIFICATE-----/' '{*}'
 
     for CERT_FILE in cert_part_*; do
-        # Extract expiration date and subject name
+        # Extract expiration date, subject name, and serial number
         EXPIRATION_DATE=$(openssl x509 -enddate -noout -in "$CERT_FILE" 2>/dev/null | cut -d= -f2)
         SUBJECT_NAME=$(openssl x509 -subject -noout -in "$CERT_FILE" 2>/dev/null | sed 's/subject= //')
+        SERIAL_NUMBER=$(openssl x509 -serial -noout -in "$CERT_FILE" 2>/dev/null | cut -d= -f2)
 
-        if [[ -n "$EXPIRATION_DATE" && -n "$SUBJECT_NAME" ]]; then
+        if [[ -n "$EXPIRATION_DATE" && -n "$SUBJECT_NAME" && -n "$SERIAL_NUMBER" ]]; then
             # Convert expiration date to YYYYMMDD format
             FORMATTED_DATE=$(date -d "$EXPIRATION_DATE" +"%Y%m%d" 2>/dev/null)
 
             # Append data to CSV file
-            #echo "$FQDN,$PORT,$EXPIRATION_DATE,$FORMATTED_DATE,\"$SUBJECT_NAME\"" >> "$OUTPUT_FILE"
-            echo "$FQDN,$PORT,$FORMATTED_DATE,$EXPIRATION_DATE,\"$SUBJECT_NAME\"" >> "$OUTPUT_FILE"
+            echo "$FQDN,$PORT,$FORMATTED_DATE,$EXPIRATION_DATE,$SERIAL_NUMBER,\"$SUBJECT_NAME\"" >> "$OUTPUT_FILE"
         else
             echo "Could not parse certificate details for $FQDN:$PORT"
         fi
