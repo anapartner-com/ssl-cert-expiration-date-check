@@ -1,3 +1,7 @@
+www.google.com:443
+anapartner.com:443
+cdse.usalearning.gov:443
+niss-ncaiss.dss.mil:443
 192.168.2.45:443
 192.168.2.45:10443
 192.168.2.45:8443
