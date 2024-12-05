@@ -1,4 +1,13 @@
 #!/bin/bash
+######################################################################################
+#   Name:  check_certs_exipration_date.sh
+#   Goal:  Query via openssl s_client process to sort and find the expiration date of 
+#          each remote hosts' TLS servers certs and if possible, intermediate ca & root ca certs.
+#          Return subject name and serial number of each cert.
+#
+#  ANA 12/2024
+######################################################################################
+
 
 # Define input and output files
 INPUT_FILE="fqdn_list.txt"  # Input file with fqdn:port format (one per line)
@@ -12,7 +21,7 @@ fi
 
 # Initialize the output CSV file with headers
 #echo "FQDN,Port,Expiration Date (YYYYMMDD),Expiration Date,Serial Number,Subject Name" > "$OUTPUT_FILE"
-echo "Expiration Date,FQDN,Port,Expiration Date,Serial Number,Subject Name" > "$OUTPUT_FILE"
+echo "Expiration (YYYYMMDD),FQDN,Port,Expiration Date (Org),Serial Number,Subject Name" > "$OUTPUT_FILE"
 
 # Read the input file line by line
 while IFS= read -r line; do
