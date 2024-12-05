@@ -11,7 +11,8 @@ if [[ ! -f $INPUT_FILE ]]; then
 fi
 
 # Initialize the output CSV file with headers
-echo "FQDN,Port,Expiration Date (YYYYMMDD),Expiration Date,Serial Number,Subject Name" > "$OUTPUT_FILE"
+#echo "FQDN,Port,Expiration Date (YYYYMMDD),Expiration Date,Serial Number,Subject Name" > "$OUTPUT_FILE"
+echo "Expiration Date,FQDN,Port,Expiration Date,Serial Number,Subject Name" > "$OUTPUT_FILE"
 
 # Read the input file line by line
 while IFS= read -r line; do
@@ -57,7 +58,8 @@ while IFS= read -r line; do
             FORMATTED_DATE=$(date -d "$EXPIRATION_DATE" +"%Y%m%d" 2>/dev/null)
 
             # Append data to CSV file
-            echo "$FQDN,$PORT,$FORMATTED_DATE,$EXPIRATION_DATE,$SERIAL_NUMBER,\"$SUBJECT_NAME\"" >> "$OUTPUT_FILE"
+            #echo "$FQDN,$PORT,$FORMATTED_DATE,$EXPIRATION_DATE,$SERIAL_NUMBER,\"$SUBJECT_NAME\"" >> "$OUTPUT_FILE"
+            echo "$FORMATTED_DATE,$FQDN,$PORT,$EXPIRATION_DATE,$SERIAL_NUMBER,\"$SUBJECT_NAME\"" >> "$OUTPUT_FILE"
         else
             echo "Could not parse certificate details for $FQDN:$PORT"
         fi
