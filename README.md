@@ -11,8 +11,9 @@ The output file, certs_info.csv, will contain the list of certs (server, interme
 
 
 ****
-![image](https://github.com/user-attachments/assets/59fb2e1f-2e7a-4c45-a0eb-2ea3426dec5b)
+![image](https://github.com/user-attachments/assets/8497e310-2fc4-41f3-be99-20f8a92d04ab)
 
+  
 Example of using openssl and the Authority Information Access (AIA) issuer URL referral to pull the full chain of certs.   
 - ./find_issuer_root_ca_cert_from_aia_url.sh niss-ncaiss.dss.mil 443
 
