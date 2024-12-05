@@ -18,6 +18,7 @@ The output file, certs_info.csv, will contain the list of certs (server, interme
   
 Example of using openssl and the Authority Information Access (AIA) issuer URL referral to pull the full chain of certs.  
 - Only works for certs with an AIA entry
+- Script updated to avoid data loops where cross-signing may exist between different intermediate ca and root ca certs.
 - ./find_issuer_root_ca_cert_from_aia_url.sh niss-ncaiss.dss.mil 443
   
 ![image](https://github.com/user-attachments/assets/f8d7085d-2264-43a9-acda-c06c747344b5)
