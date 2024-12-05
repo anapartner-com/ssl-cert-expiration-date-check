@@ -1,4 +1,12 @@
 #!/bin/bash
+######################################################################################
+#   Name:  find_issuer_root_ca_cert_from_aia_url.sh
+#   Goal:  Query via openssl s_client process the AIA URL of a server cert to identify
+#          each remote hosts' TLS intermediate ca & root ca certs.
+#   Execute:   ./find_issuer_root_ca_cert_from_aia_url.sh  FQDN PORT
+#
+#  ANA 12/2024
+######################################################################################
 
 # Input: FQDN and PORT
 FQDN=$1
