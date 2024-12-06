@@ -21,6 +21,7 @@ Reminder:
 Integration:
 - Integrate this process with Syslog to redirect from any local network/endpoint segment to a centralized collector.
 - Use with remote ssh process to query directly any endpoints are not exposed externally.
+- Integrate with Broadom DXO2 (APM) or Grafana or Dynatrace to ensure you are aware of when your certs expire. 
   
 
 
