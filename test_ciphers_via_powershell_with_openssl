@@ -1,0 +1,50 @@
+# Define the target server and port
+#$Target = "192.168.242.80:20411"
+$Target = "192.168.242.80:20443"
+#$Target = "192.168.242.80:636"
+
+# Define the OpenSSL executable path
+$OpenSSLPath = "C:\Program Files (x86)\CA\Identity Manager\Connector Server\ccs\bin\openssl.exe"
+
+# Define the list of protocols to test
+$Protocols = @("tls1_2", "tls1_3")
+
+# Define the path for the openssl.cnf file
+$OpenSSLConfPath = "C:\Program Files (x86)\CA\Identity Manager\Connector Server\ccs\openssl.cnf"
+
+# Create a blank openssl.cnf file
+Write-Host "Creating blank openssl.cnf..."
+try {
+    "" | Set-Content -Path $OpenSSLConfPath -Encoding ASCII
+    Write-Host "openssl.cnf created at $OpenSSLConfPath."
+} catch {
+    Write-Host "Failed to create openssl.cnf. Error: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Set the OpenSSL configuration environment variable
+$Env:OPENSSL_CONF = $OpenSSLConfPath
+
+
+
+# Get the list of ciphers
+try {
+    $CipherList = & "$OpenSSLPath" ciphers 'ALL:eNULL' | ForEach-Object { $_ -split ":" } | Where-Object { $_ -ne "" }
+} catch {
+    Write-Host "Error retrieving cipher list: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Loop through each protocol and cipher
+foreach ($Protocol in $Protocols) {
+    foreach ($Cipher in $CipherList) {
+        # Execute the OpenSSL s_client command
+        $Command = "$OpenSSLPath s_client -connect $Target -cipher $Cipher -$Protocol <nul"
+        $Result = & cmd /c $Command 2>&1
+
+        # Check the result for success
+        if ($Result -notmatch "error|failed") {
+            Write-Host "$($Protocol):`t$($Cipher)" -ForegroundColor Green
+        }
+    }
+}
