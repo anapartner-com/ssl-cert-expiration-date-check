@@ -18,7 +18,9 @@ Reminder:
 - Never add the "server.cert" to the keystore, these will/should rotate often as the expiration may be 90 or 365 days.
 - You may add the intermediate ca cert(s) to a keystore if the openssl s_client process does not return this cert during the initial query.  Otherwise, avoid adding it, we should only need the final 'root ca' cert.
 
-     
+Integration:
+- Integrate this process with Syslog to redirect from any local network/endpoint segment to a centralized collector.
+- Use with remote ssh process to query directly any endpoints are not exposed externally.
   
 
 
