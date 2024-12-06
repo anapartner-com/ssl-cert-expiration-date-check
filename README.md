@@ -7,7 +7,16 @@ This script will use an input file of "fqdn_list.txt" of  FQDN/IP and Ports that
 The output file, certs_info.csv, will contain the list of certs (server, intermediate ca, root ca) if they are return by openssl command.
 - Most endpoints will ONLY the return server and intermediate ca certs.   Others may return the full chain with the root ca cert.
 - We will expect to see at minimum, one row for the server cert.
-- If the other certs (intermediate ca & root ca) are returned, we will see this listed as well as individual rows.   
+- If the other certs (intermediate ca & root ca) are returned, we will see this listed as well as individual rows.
+
+Reminder:   
+- Most commercial sites will use an industry root ca cert that is already updated in local workstations cert/key stores or browsers.
+- If the site is DOD or internal commerical site, then the root ca cert is likely not in a local keystore, e.g. java keystore, os keystore, and will need to be added manually.
+- On MS windows: Use  certlm.msc  for  MS Win "Local Machine" keystore
+- For Java (Linux/Win):   (Example to add a custom ADS root ca cert to the local Java keystore with the default password of "changeit" )  
+    keytool -import -alias exchange-lab-public-root-cert -trustcacerts -file exchange-lab-public-root-cert.cer -storetype JKS -keystore /opt/CA/java/jre/lib/security/cacerts -storepass changeit
+
+     
   
 
 
