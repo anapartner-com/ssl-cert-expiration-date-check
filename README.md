@@ -1,5 +1,5 @@
 # ssl-cert-check
-ssl cert check via bash shell script
+ssl cert check via bash shell script and return expiration dates.
 
 This script will use an input file of "fqdn_list.txt" of  FQDN/IP and Ports that have a TLS cert associated.
 - Input file may be any protocol protected with a TLS cert, e.g. HTTPS/LDAPS/JDBC(TLS)/etc, over any exposed port.
