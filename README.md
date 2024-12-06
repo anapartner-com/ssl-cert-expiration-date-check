@@ -15,8 +15,8 @@ Reminder:
 - On MS windows: Use  certlm.msc  for  MS Win "Local Machine" keystore
 - For Java (Linux/Win):  Use the java keytool binary  (The below example demonstrates adding a custom Active Directory (ADS) root ca cert to the local Java keystore with the default password of "changeit" )  
     keytool -import -alias exchange-lab-public-root-cert -trustcacerts -file exchange-lab-public-root-cert.cer -storetype JKS -keystore /opt/CA/java/jre/lib/security/cacerts -storepass changeit
-- Never add the "server.cert" to the keystore, these will/should rotate often (90/365 days)
-- You may add the intermediate ca cert to a keystore if the openssl s_client process does not return this cert during the initial query.  Otherwise, avoid adding it.
+- Never add the "server.cert" to the keystore, these will/should rotate often as the expiration may be 90 or 365 days.
+- You may add the intermediate ca cert(s) to a keystore if the openssl s_client process does not return this cert during the initial query.  Otherwise, avoid adding it, we should only need the final 'root ca' cert.
 
      
   
