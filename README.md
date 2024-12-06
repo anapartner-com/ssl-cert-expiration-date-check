@@ -13,7 +13,7 @@ Reminder:
 - Most commercial sites will use an industry root ca cert that is already updated in local workstations cert/key stores or browsers.
 - If the site is DOD or an internal commerical site, then the root ca cert is likely not in a local keystore, e.g. java keystore, Operating System (OS) keystore, and will need to be added manually.
 - On MS windows: Use  certlm.msc  for  MS Win "Local Machine" keystore
-- For Java (Linux/Win):   (Example to add a custom ADS root ca cert to the local Java keystore with the default password of "changeit" )  
+- For Java (Linux/Win):  Use the java keytool binary  (Example to add a custom ADS root ca cert to the local Java keystore with the default password of "changeit" )  
     keytool -import -alias exchange-lab-public-root-cert -trustcacerts -file exchange-lab-public-root-cert.cer -storetype JKS -keystore /opt/CA/java/jre/lib/security/cacerts -storepass changeit
 
      
