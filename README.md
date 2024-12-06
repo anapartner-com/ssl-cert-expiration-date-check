@@ -37,3 +37,11 @@ Example of using openssl and the Authority Information Access (AIA) issuer URL r
 - ./find_issuer_root_ca_cert_from_aia_url.sh niss-ncaiss.dss.mil 443
   
 ![image](https://github.com/user-attachments/assets/f8d7085d-2264-43a9-acda-c06c747344b5)
+
+
+****
+
+Example of testing cipher suites with MS Powershell ISE and CA Identity Manager CCS bin folder with openssl.exe binary
+- We test a webservice (20443), a LDAP service (20411), and an Active Directory domain server (636)
+
+![image](https://github.com/user-attachments/assets/60fe84c5-79fe-4a07-bdfe-12275a168ac2)
