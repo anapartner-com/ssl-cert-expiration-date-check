@@ -13,7 +13,7 @@ $Targets = @(
     "yourinternalhost.local:8443"
 )
 
-# OpenSSL paths
+# OpenSSL paths - Confirm the openssl binary exists under these folders.
 $OpenSSLPath = "E:\Program Files\CA\secure-proxy\SSL\bin\openssl.exe"
 $OpenSSLConfPath = "E:\Program Files\CA\secure-proxy\SSL\bin\custom-openssl.cnf"
 
