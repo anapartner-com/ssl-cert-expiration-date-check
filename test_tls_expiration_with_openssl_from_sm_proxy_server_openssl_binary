@@ -1,0 +1,58 @@
+# Define target server
+$Target = "192.168.242.80:20443"
+
+# OpenSSL executable and configuration paths
+$OpenSSLPath = "E:\Program Files\CA\secure-proxy\SSL\bin\openssl.exe"
+$OpenSSLConfPath = "E:\Program Files\CA\secure-proxy\SSL\bin\custom-openssl.cnf"
+
+# Protocols to test
+$Protocols = @("tls1_2", "tls1_3")
+
+# Create blank openssl.cnf if it doesn't exist
+Write-Host "Creating blank openssl.cnf..."
+try {
+    "" | Set-Content -Path $OpenSSLConfPath -Encoding ASCII
+    Write-Host "openssl.cnf created at $OpenSSLConfPath."
+} catch {
+    Write-Host "Failed to create openssl.cnf. Error: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Set config environment
+$Env:OPENSSL_CONF = $OpenSSLConfPath
+
+# Get cipher list
+try {
+    $CipherList = & "$OpenSSLPath" ciphers 'ALL:eNULL' | ForEach-Object { $_ -split ":" } | Where-Object { $_ -ne "" }
+} catch {
+    Write-Host "Error retrieving cipher list: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Loop over protocol and cipher
+foreach ($Protocol in $Protocols) {
+    foreach ($Cipher in $CipherList) {
+        $Command = "$OpenSSLPath s_client -connect $Target -cipher $Cipher -$Protocol <nul"
+        $Result = & cmd /c $Command 2>&1
+
+        if ($Result -notmatch "error|handshake failure|Connection refused|FAILED") {
+            Write-Host "$Protocol`t$Cipher" -ForegroundColor Green
+
+            # Extract certificate section
+            $certSection = $Result -replace ".*?-----BEGIN CERTIFICATE-----", "-----BEGIN CERTIFICATE-----"
+            $certSection = $certSection -replace "-----END CERTIFICATE-----.*", "-----END CERTIFICATE-----"
+
+            if ($certSection -match "BEGIN CERTIFICATE") {
+                $tmpCert = "$env:TEMP\tmp-cert.pem"
+                Set-Content -Path $tmpCert -Value $certSection -Encoding ascii
+
+                # Use OpenSSL to parse certificate details
+                $x509 = & "$OpenSSLPath" x509 -in $tmpCert -noout -subject -serial -startdate -enddate
+
+                Write-Host $x509 -ForegroundColor Cyan
+            } else {
+                Write-Host "Could not extract certificate." -ForegroundColor Yellow
+            }
+        }
+    }
+}
