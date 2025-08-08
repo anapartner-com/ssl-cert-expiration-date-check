@@ -1,3 +1,4 @@
+# Copy this entire script into Powershell ISE and update the target host list below with their repective ports (HTTPS default is 443), (LDAPS default is 636), etc.
 # Array of 10 host:port targets
 $Targets = @(
     "192.168.242.80:20443",
