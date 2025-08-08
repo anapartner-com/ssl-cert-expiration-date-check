@@ -1,0 +1,76 @@
+# Array of 10 host:port targets
+$Targets = @(
+    "192.168.242.80:20443",
+    "google.com:443",
+    "github.com:443",
+    "example.com:443",
+    "outlook.office365.com:443",
+    "login.microsoftonline.com:443",
+    "yahoo.com:443",
+    "cloudflare.com:443",
+    "stackoverflow.com:443",
+    "yourinternalhost.local:8443"
+)
+
+# OpenSSL paths
+$OpenSSLPath = "E:\Program Files\CA\secure-proxy\SSL\bin\openssl.exe"
+$OpenSSLConfPath = "E:\Program Files\CA\secure-proxy\SSL\bin\custom-openssl.cnf"
+
+# Protocols to test
+$Protocols = @("tls1_2", "tls1_3")
+
+# Create openssl.cnf if missing
+try {
+    "" | Set-Content -Path $OpenSSLConfPath -Encoding ASCII
+    Write-Host "openssl.cnf created at $OpenSSLConfPath." -ForegroundColor DarkGray
+} catch {
+    Write-Host "Failed to create openssl.cnf. Error: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Set environment
+$Env:OPENSSL_CONF = $OpenSSLConfPath
+
+# Retrieve cipher list
+try {
+    $CipherList = & "$OpenSSLPath" ciphers 'ALL:eNULL' | ForEach-Object { $_ -split ":" } | Where-Object { $_ -ne "" }
+} catch {
+    Write-Host "Failed to get cipher list: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Loop through all targets
+foreach ($Target in $Targets) {
+    Write-Host "`n`n########################################################" -ForegroundColor Yellow
+    Write-Host "Scanning: $Target" -ForegroundColor Cyan
+    Write-Host "########################################################" -ForegroundColor Yellow
+
+    foreach ($Protocol in $Protocols) {
+        foreach ($Cipher in $CipherList) {
+            $Command = "$OpenSSLPath s_client -connect $Target -cipher $Cipher -$Protocol <nul"
+            $Result = & cmd /c $Command 2>&1
+
+            if ($Result -notmatch "error|handshake failure|Connection refused|FAILED") {
+                Write-Host "✔ $Protocol`t$Cipher" -ForegroundColor Green
+
+                # Extract PEM certificate
+                $certSection = $Result -replace ".*?-----BEGIN CERTIFICATE-----", "-----BEGIN CERTIFICATE-----"
+                $certSection = $certSection -replace "-----END CERTIFICATE-----.*", "-----END CERTIFICATE-----"
+
+                if ($certSection -match "BEGIN CERTIFICATE") {
+                    $tmpCert = "$env:TEMP\tmp-cert.pem"
+                    Set-Content -Path $tmpCert -Value $certSection -Encoding ascii
+
+                    # Parse cert info
+                    $x509 = & "$OpenSSLPath" x509 -in $tmpCert -noout -subject -serial -startdate -enddate
+
+                    Write-Host $x509 -ForegroundColor Cyan
+                } else {
+                    Write-Host "⚠ Could not extract certificate" -ForegroundColor DarkYellow
+                }
+
+                break  # stop after first successful cipher for this protocol
+            }
+        }
+    }
+}
